@@ -3,12 +3,17 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "test.tmx",
+    "activeFile": "clouds.tsx",
     "expandedProjectPaths": [
         "."
     ],
+    "exportAsImage.useCurrentScale": true,
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "clouds.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "grassy terrain.tsx": {
             "dynamicWrapping": false,
             "scaleInDock": 1,
@@ -21,10 +26,10 @@
         },
         "test.tmx": {
             "scale": 0.75,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 379.99999999999994,
-                "y": 438
+                "x": 615.9999999999999,
+                "y": 243.33333333333331
             }
         }
     },
@@ -32,13 +37,15 @@
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "test.tmx",
-        "grassy terrain.tsx"
+        "grassy terrain.tsx",
+        "clouds.tsx"
     ],
     "project": "crystalline.tiled-project",
     "recentFiles": [
-        "skt.tsx",
+        "test.tmx",
         "grassy terrain.tsx",
-        "test.tmx"
+        "clouds.tsx",
+        "skt.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.spacing": 1
