@@ -1,0 +1,45 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "test.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "grassy terrain.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "skt.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "test.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 379.99999999999994,
+                "y": 438
+            }
+        }
+    },
+    "last.imagePath": "D:/Sean/Coding/New Projects - 9.22/Games/Assets/maps",
+    "map.lastUsedFormat": "tmx",
+    "openFiles": [
+        "test.tmx",
+        "grassy terrain.tsx"
+    ],
+    "project": "crystalline.tiled-project",
+    "recentFiles": [
+        "skt.tsx",
+        "grassy terrain.tsx",
+        "test.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.spacing": 1
+}
