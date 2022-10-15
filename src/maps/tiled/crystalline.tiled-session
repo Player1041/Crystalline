@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "clouds.tsx",
+    "activeFile": "test.tmx",
     "expandedProjectPaths": [
         "."
     ],
@@ -33,7 +33,7 @@
             }
         }
     },
-    "last.imagePath": "D:/Sean/Coding/New Projects - 9.22/Games/Assets/maps",
+    "last.imagePath": "D:/Sean/Coding/New Projects - 9.22/Games/Game Jams/REstart 2022 - PSP/Crystalline/src/maps/tilesets",
     "map.lastUsedFormat": "tmx",
     "openFiles": [
         "test.tmx",
@@ -42,9 +42,9 @@
     ],
     "project": "crystalline.tiled-project",
     "recentFiles": [
-        "test.tmx",
-        "grassy terrain.tsx",
         "clouds.tsx",
+        "grassy terrain.tsx",
+        "test.tmx",
         "skt.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
