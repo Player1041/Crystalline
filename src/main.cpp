@@ -29,19 +29,33 @@ int main(int argc, char** argv){
 
 #include <QuickGame.hpp>
 
+using namespace QuickGame;
+using namespace QuickGame::Graphics;
+using namespace QuickGame::Input;
+
+
+
 int main(int argc, char** argv){
     QuickGame::init();    
-    QuickGame::Graphics::set2D();
+    set2D();
 
-    QuickGame::Graphics::Sprite sprite({240, 136}, {256, 256}, {"./sprites/character/life.png", 0, 0});
+    Sprite sprite({240, 136}, {18, 16}, {"sprites/character/life.png", 0, 0});
 
-    while(QuickGame::running()){
-        QuickGame::Graphics::start_frame();
-        QuickGame::Graphics::clear();
+    QGCamera2D camera = {
+        {x = 0, y = 0},
+        rotation = 0f
+    }
+
+    set_camera(camera)
+
+    while(running()){
+        update();
+        start_frame();
+        clear();
 
         sprite.draw();
 
-        QuickGame::Graphics::end_frame(true);
+        end_frame(true);
     }
 
     QuickGame::terminate();
