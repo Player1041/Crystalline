@@ -1,0 +1,20 @@
+{
+    "files.associations": {
+        "quickgame.h": "c",
+        "gu2gl.h": "c",
+        "graphicscontext.h": "c",
+        "stddef.h": "c",
+        "types.h": "c",
+        "sprite.h": "c",
+        "input.h": "c",
+        "texture.h": "c",
+        "pspkernel.h": "c",
+        "audio.h": "c",
+        "tilemap.h": "c",
+        "timer.h": "c",
+        "lualib.h": "c",
+        "lauxlib.h": "c",
+        "lua.h": "c",
+        "graphics.h": "c"
+    }
+}

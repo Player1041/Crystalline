@@ -4,11 +4,10 @@ project(Crystalline)
 set(CMAKE_CXX_STANDARD 11)
 
 add_executable(Crystalline main.cpp)
-add_subdirectory(../QuickGame)
+add_subdirectory(./QuickGame)
 
-target_link_libraries(basic PUBLIC QuickGame)
-target_include_directories(basic PUBLIC ../QuickGame/include)
-target_link_libraries(Crystalline PUBLIC src)
+target_link_libraries(Crystalline PUBLIC QuickGame)
+target_include_directories(Crystalline PUBLIC ./QuickGame/include)
 target_include_directories(Crystalline PUBLIC src/include)
 
 create_pbp_file(
