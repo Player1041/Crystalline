@@ -1,33 +1,73 @@
 #include <QuickGame.hpp>
+#include <pspctrl.h>
 
 using namespace QuickGame;
 using namespace QuickGame::Graphics;
 using namespace QuickGame::Input;
+using namespace QuickGame::Audio;
 
 
 
 int main(int argc, char** argv){
     QuickGame::init();    
     set2D();
-
-    Sprite sprite({240, 136}, {18, 16}, {"sprites/character/life.png", 0, 0});
-
+    Sprite testMap({0,0}, {384, 384}, {"maps/pngs/test.png", 0, 0});
+    testMap.layer = -1;
+    testMap.transform.scale.x *= 3;
+    testMap.transform.scale.y *= 3;
+    Sprite character({240, 136}, {16, 18}, {"sprites/character/char v2 front.png", 1, 0});
+    Clip click("audio/click.wav", false, false);
+    
     QGCamera2D camera = {
-        {x = 0, y = 0},
-        rotation = 0f,
+        {0, 0},
+        0.f
     };
 
-    set_camera(camera)
+    QuickGame::Graphics::set_camera(camera);
 
     while(running()){
         update();
+
+        if(button_held(PSP_CTRL_UP)) {
+            character.transform.position.y += 2.0f;
+            if(character.transform.position.y > 54) {
+                camera.position.y += 2.0f;
+            }
+        }
+
+        if(button_held(PSP_CTRL_DOWN)) {
+            character.transform.position.y -= 2.0f;
+            if(character.transform.position.y < 222) {
+                camera.position.y -= 2.0f;
+            }
+        }
+
+        if(button_held(PSP_CTRL_RIGHT)) {
+            character.transform.position.x += 2.0f;
+            if(character.transform.position.x > 384) {
+                camera.position.x += 2.0f;
+            }
+        }
+
+        if(button_held(PSP_CTRL_LEFT)) {
+            character.transform.position.x -= 2.0f;
+            if(character.transform.position.x < 96) {
+                camera.position.x -= 2.0f;
+            }
+        }
+
+        if(button_pressed(PSP_CTRL_CROSS)) {
+            click.play(0);
+        }
+
         start_frame();
         clear();
 
-        sprite.draw();
+        testMap.draw();
+        character.draw();
 
         end_frame(true);
-    };
+    }
 
     QuickGame::terminate();
     return 0;
