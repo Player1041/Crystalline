@@ -4,13 +4,13 @@ int main(int argc, char** argv){
     QuickGame::init();    
     QuickGame::Graphics::set2D();
 
-    QuickGame::Graphics::Sprite sprite({240, 136}, {256, 256}, {"./sprites/character/life.png", 0, 0});
+    QuickGame::Graphics::Sprite CharSprite({240, 136}, {256, 256}, {"./sprites/character/life.png", 0, 0});
 
     while(QuickGame::running()){
         QuickGame::Graphics::start_frame();
         QuickGame::Graphics::clear();
 
-        sprite.draw();
+        CharSprite.draw();
 
         QuickGame::Graphics::end_frame(true);
     }
