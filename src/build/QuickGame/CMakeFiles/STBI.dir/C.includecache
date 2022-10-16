@@ -1,0 +1,40 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/QuickGame/stbi/stb_image.h
+stb_image.h
+/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/QuickGame/stbi/stb_image.h
+stdio.h
+-
+stdarg.h
+-
+stddef.h
+-
+stdlib.h
+-
+string.h
+-
+math.h
+-
+stdio.h
+-
+assert.h
+-
+stdint.h
+-
+emmintrin.h
+-
+intrin.h
+-
+arm_neon.h
+-
+
+/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/QuickGame/stbi/stbi.c
+stb_image.h
+/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/QuickGame/stbi/stb_image.h
+

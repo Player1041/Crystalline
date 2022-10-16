@@ -18,10 +18,10 @@ int main(int argc, char** argv){
     Sprite character({240, 136}, {16, 18}, {"sprites/character/char v2 front.png", 1, 0});
     Clip click("audio/click.wav", false, false);
     
-    QGCamera2D camera = {
-        {0, 0},
-        0.f
-    };
+    QGCamera2D camera = QGCamera2D();
+    camera.position.x = 0;
+    camera.position.y = 0;
+    camera.rotation = 0;
 
     QuickGame::Graphics::set_camera(camera);
 
@@ -51,7 +51,7 @@ int main(int argc, char** argv){
 
         if(button_held(PSP_CTRL_LEFT)) {
             character.transform.position.x -= 2.0f;
-            if(character.transform.position.x < 96) {
+            if(character.transform.position.x <= 96) {
                 camera.position.x -= 2.0f;
             }
         }

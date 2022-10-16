@@ -3,7 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:\\pspcompiler\\pspdev\\psp\\include"
             ],
             "defines": [
                 "_DEBUG",
@@ -11,10 +12,26 @@
                 "_UNICODE"
             ],
             "windowsSdkVersion": "10.0.19041.0",
-            "compilerPath": "D:/Sean/Coding/extras/Visual Studio/VS/VC/Tools/MSVC/14.32.31326/bin/Hostx64/x64/cl.exe",
+            "compilerPath": "C:/Users/spinn/Documents/tools/mingw64/bin/g++.exe",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "windows-msvc-x64"
+            "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "psp",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${vcpkgRoot}/x86-windows/include",
+                "C:/pspcompiler/pspdev/psp/sdk/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.22621.0",
+            "compilerPath": "C:\\pspcompiler\\pspdev\\bin\\psp-g++.exe",
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4
