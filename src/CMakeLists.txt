@@ -14,4 +14,5 @@ create_pbp_file(
     TARGET Crystalline
     TITLE Crystalline
     BUILD_PRX ON
+    BUILD_PRX=1
 )
