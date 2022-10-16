@@ -11,7 +11,7 @@ using namespace QuickGame::Audio;
 int main(int argc, char** argv){
     QuickGame::init();    
     set2D();
-    Sprite testMap({0,0}, {384, 384}, {"maps/pngs/test.png", 0, 0});
+    Sprite testMap({0,0}, {389, 306}, {"maps/pngs/test.png", 0, 0});
     testMap.layer = -1;
     testMap.transform.scale.x *= 3;
     testMap.transform.scale.y *= 3;

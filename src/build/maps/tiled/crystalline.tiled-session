@@ -47,6 +47,7 @@
         "test.tmx",
         "skt.tsx"
     ],
+    "resizeMap.removeObjects": true,
     "tileset.lastUsedFormat": "tsx",
     "tileset.spacing": 1
 }
