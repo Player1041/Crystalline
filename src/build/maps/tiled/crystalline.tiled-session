@@ -7,6 +7,7 @@
     "expandedProjectPaths": [
         "."
     ],
+    "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "clouds.tsx": {
             "scaleInDock": 1,
@@ -30,8 +31,8 @@
             "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 259.99999999999994,
-                "y": 171.66666666666666
+                "x": 173.33333333333337,
+                "y": 145.66666666666666
             }
         }
     },

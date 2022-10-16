@@ -13,10 +13,15 @@ int main(int argc, char** argv){
 
     set2D();
 
-    Sprite testMap({0,25}, {480, 288}, {"maps/pngs/test.png", 0, 0});
+    Sprite testMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
     testMap.layer = -1;
     testMap.transform.position.x = 240;
     testMap.transform.position.y = 125;
+
+    Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 0, 0});
+    curveMap.layer = -1;
+    curveMap.transform.position.x = 240;
+    curveMap.transform.position.y = 125;
 
 
     Sprite character({240, 136}, {30, 53}, {"sprites/character/char v2 front.png", 1, 0});
@@ -46,28 +51,28 @@ int main(int argc, char** argv){
 
         if(button_held(PSP_CTRL_UP)) {
             if(character.transform.position.y > 0) {
-                character.transform.position.y += 2.0f;
+                character.transform.position.y += 1.5f;
             //camera.position.y += 2.0f;
             }
         }
 
         if(button_held(PSP_CTRL_DOWN)) {
             if(character.transform.position.y < 472) {
-                character.transform.position.y -= 2.0f;
+                character.transform.position.y -= 1.5f;
                 //camera.position.y -= 2.0f;
             }
         }
 
         if(button_held(PSP_CTRL_RIGHT)) {
             if(character.transform.position.x < 272) {
-                character.transform.position.x += 2.0f;
+                character.transform.position.x += 1.5f;
             // camera.position.x += 2.0f;
             }
         }
 
         if(button_held(PSP_CTRL_LEFT)) {
             if(character.transform.position.x > 0) {
-                character.transform.position.x -= 2.0f;
+                character.transform.position.x -= 1.5f;
                 //camera.position.x -= 2.0f;
             }
         }
@@ -79,6 +84,7 @@ int main(int argc, char** argv){
         start_frame();
         clear();
 
+        if(button_pressed(PSP_CTRL_START)) 
         testMap.draw();
         character.draw();
 
