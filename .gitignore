@@ -1,5 +1,6 @@
 .tiled-session
 .tiled-project
+/src/QuickGame/
 /src/build/CMakeFiles/
 /src/build/QuickGame/
 /src/build/CMakeCache.txt
