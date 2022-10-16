@@ -13,10 +13,16 @@ int main(int argc, char** argv){
     set2D();
     Sprite testMap({0,0}, {384, 384}, {"maps/pngs/test.png", 0, 0});
     testMap.layer = -1;
-    testMap.transform.scale.x *= 3;
-    testMap.transform.scale.y *= 3;
+    testMap.transform.position.x = 240;
+    testMap.transform.position.y = 125;
     Sprite character({240, 136}, {16, 18}, {"sprites/character/char v2 front.png", 1, 0});
+    character.transform.scale.x *= 0.5;
+    character.transform.scale.y *=0.5;
     Clip click("audio/click.wav", false, false);
+    Sprite bg({0,0}, {384, 384}, {"maps/pngs/bg.png", 0, 0});
+    bg.layer = -2;
+    bg.transform.scale.x *= 5;
+    bg.transform.scale.y *= 5;
     
     QGCamera2D camera = QGCamera2D();
     camera.position.x = 0;
@@ -30,22 +36,22 @@ int main(int argc, char** argv){
 
         if(button_held(PSP_CTRL_UP)) {
             character.transform.position.y += 2.0f;
-            camera.position.y += 2.0f;
+            //camera.position.y += 2.0f;
         }
 
         if(button_held(PSP_CTRL_DOWN)) {
             character.transform.position.y -= 2.0f;
-            camera.position.y -= 2.0f;
+            //camera.position.y -= 2.0f;
         }
 
         if(button_held(PSP_CTRL_RIGHT)) {
             character.transform.position.x += 2.0f;
-            camera.position.x += 2.0f;
+           // camera.position.x += 2.0f;
         }
 
         if(button_held(PSP_CTRL_LEFT)) {
             character.transform.position.x -= 2.0f;
-            camera.position.x -= 2.0f;
+            //camera.position.x -= 2.0f;
         }
 
         if(button_pressed(PSP_CTRL_CROSS)) {
