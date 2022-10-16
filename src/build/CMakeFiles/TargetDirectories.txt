@@ -1,8 +1,0 @@
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/CMakeFiles/edit_cache.dir
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/CMakeFiles/Crystalline.dir
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/QuickGame/CMakeFiles/edit_cache.dir
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/QuickGame/CMakeFiles/interpreter.dir
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/QuickGame/CMakeFiles/STBI.dir
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/QuickGame/CMakeFiles/rebuild_cache.dir
-/mnt/c/Users/spinn/Documents/GitHub/Crystalline/src/build/QuickGame/CMakeFiles/QuickGame.dir

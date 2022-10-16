@@ -1,6 +1,7 @@
 .tiled-session
 .tiled-project
 /src/build/CMakeFiles
-.vs
-src/.vs
-.vscode
+/.vs
+/src/.vs
+/.vscode
+/CMakeFiles/
