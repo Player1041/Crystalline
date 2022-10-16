@@ -1,7 +1,11 @@
 .tiled-session
 .tiled-project
-/src/build/CMakeFiles
-/.vs
-/src/.vs
-/.vscode
-/CMakeFiles/
+/src/build/CMakeFiles/
+/src/build/QuickGame/
+/src/build/CMakeCache.txt
+/src/build/cmake_install.cmake
+/src/build/PARAM.SFO
+/src/build/Makefile
+/.vs/
+/src/.vs/
+/.vscode/
