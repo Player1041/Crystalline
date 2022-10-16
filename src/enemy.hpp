@@ -1,5 +1,3 @@
 #include <QuickGame.hpp>
 
-void spawn() {
-    
-}
+class 
