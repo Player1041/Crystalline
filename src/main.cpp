@@ -8,6 +8,8 @@ using namespace QuickGame::Audio;
 
 
 
+
+
 int main(int argc, char** argv){
     QuickGame::init();    
 
@@ -16,12 +18,12 @@ int main(int argc, char** argv){
     Sprite testMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
     testMap.layer = -1;
     testMap.transform.position.x = 240;
-    testMap.transform.position.y = 125;
+    testMap.transform.position.y = 140;
 
     Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 0, 0});
     curveMap.layer = -1;
     curveMap.transform.position.x = 240;
-    curveMap.transform.position.y = 125;
+    curveMap.transform.position.y = 140;
 
 
     Sprite character({240, 136}, {30, 53}, {"sprites/character/char v2 front.png", 1, 0});
@@ -84,8 +86,12 @@ int main(int argc, char** argv){
         start_frame();
         clear();
 
-        if(button_pressed(PSP_CTRL_START)) 
         testMap.draw();
+
+        if(button_pressed(PSP_CTRL_START)) {
+            curveMap.draw();
+        }
+        
         character.draw();
 
         end_frame(true);
