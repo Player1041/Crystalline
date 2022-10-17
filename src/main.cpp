@@ -56,28 +56,28 @@ int main(int argc, char** argv){
         update();
 
         if(button_held(PSP_CTRL_UP)) {
-            if(character.transform.position.y > 0) {
+            if(character.transform.position.y > 10) {
                 character.transform.position.y += 1.5f;
             //camera.position.y += 2.0f;
             }
         }
 
         if(button_held(PSP_CTRL_DOWN)) {
-            if(character.transform.position.y < 472) {
+            if(character.transform.position.y < 272) {
                 character.transform.position.y -= 1.5f;
                 //camera.position.y -= 2.0f;
             }
         }
 
         if(button_held(PSP_CTRL_RIGHT)) {
-            if(character.transform.position.x < 272) {
+            if(character.transform.position.x < 480) {
                 character.transform.position.x += 1.5f;
             // camera.position.x += 2.0f;
             }
         }
 
         if(button_held(PSP_CTRL_LEFT)) {
-            if(character.transform.position.x > 0) {
+            if(character.transform.position.x > 10) {
                 character.transform.position.x -= 1.5f;
                 //camera.position.x -= 2.0f;
             }
