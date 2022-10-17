@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "curves.tmx",
+    "activeFile": "",
     "expandedProjectPaths": [
         "."
     ],
@@ -14,11 +14,11 @@
             "scaleInEditor": 4
         },
         "curves.tmx": {
-            "scale": 3,
+            "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 207.33333333333334,
-                "y": 94.83333333333333
+                "x": 161.33333333333331,
+                "y": 133
             }
         },
         "grassy terrain.tsx": {
@@ -39,13 +39,13 @@
             "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 173.33333333333337,
-                "y": 145.66666666666666
+                "x": 174,
+                "y": 145.66666666666669
             }
         }
     },
     "last.imagePath": "D:/Sean/Coding/New Projects - 9.22/Games/Game Jams/REstart 2022 - PSP/Crystalline/src/build/maps/tilesets",
-    "map.height": 8,
+    "map.height": 9,
     "map.lastUsedFormat": "tmx",
     "map.width": 15,
     "openFiles": [
