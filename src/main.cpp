@@ -1,6 +1,5 @@
 #include <QuickGame.hpp>
 #include <pspctrl.h>
-
 using namespace QuickGame;
 using namespace QuickGame::Graphics;
 using namespace QuickGame::Input;
@@ -14,25 +13,21 @@ int main(int argc, char** argv){
     QuickGame::init();    
 
     set2D();
-
+    bool isTitle = true;
     Sprite testMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
     testMap.layer = -1;
     testMap.transform.position.x = 240;
     testMap.transform.position.y = 140;
 
-    Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 1, 0});
+    /*Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 1, 0});
     curveMap.layer = -1;
     curveMap.transform.position.x = 240;
-    curveMap.transform.position.y = 120;
+    curveMap.transform.position.y = 120;*/
 
 
     Sprite character({240, 136}, {30, 53}, {"sprites/character/char v2 front.png", 1, 0});
     character.transform.scale.x *= 0.5;
     character.transform.scale.y *=0.5;
-
-    Sprite blueEnemy({240, 136}, {20, 20}, {"sprites/enemies/blue/front.png", 0 ,0});
-    blueEnemy.transform.position.x = 240;
-    blueEnemy.transform.position.y = 120;
 
 
     Clip click("audio/click.wav", false, false);
@@ -51,10 +46,19 @@ int main(int argc, char** argv){
 
 
     QuickGame::Graphics::set_camera(camera);
-
+     Sprite title({0,0}, {480, 288}, {"maps/pngs/curves.png", 0, 0});
     while(running()){
         update();
-
+        if(isTitle){
+            
+    title.layer = 1;
+    title.transform.position.x = 240;
+    title.transform.position.y = 140;
+            title.draw();
+            if(PSP_CTRL_CROSS){
+                isTitle = false;
+            }
+        }
         if(button_held(PSP_CTRL_UP)) {
             if(character.transform.position.y > 10) {
                 character.transform.position.y += 1.5f;
@@ -92,13 +96,6 @@ int main(int argc, char** argv){
         clear();
 
         testMap.draw();
-        
-        if(button_pressed(PSP_CTRL_SQUARE)){
-            blueEnemy.draw();
-        }
-        if(button_held(PSP_CTRL_START)) {
-            curveMap.draw();
-        }
         
         character.draw();
 
