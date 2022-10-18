@@ -1,5 +1,10 @@
+
+// includes
 #include <QuickGame.hpp>
 #include <pspctrl.h>
+
+
+// any namespaces
 using namespace QuickGame;
 using namespace QuickGame::Graphics;
 using namespace QuickGame::Input;
@@ -10,47 +15,80 @@ using namespace QuickGame::Audio;
 
 
 int main(int argc, char** argv){
+    // initalize QG
     QuickGame::init();    
-
+    
+    // set camera to 2d
     set2D();
+
+    // various draw functions needed
     bool isTitle = true;
+    bool isLevelSelect = true;
+    bool isBasic = false;
+    bool isCurves = false;
+    bool isPause = false;
+
+    // sprite loading
+
+    // basic map
     Sprite testMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
     testMap.layer = -1;
     testMap.transform.position.x = 240;
     testMap.transform.position.y = 140;
 
-    /*Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 1, 0});
+    // curves map
+    Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 1, 0});
     curveMap.layer = -1;
     curveMap.transform.position.x = 240;
-    curveMap.transform.position.y = 120;*/
+    curveMap.transform.position.y = 120;
 
-
-    Sprite character({240, 136}, {30, 53}, {"sprites/character/char v2 front.png", 1, 0});
+    // character sprite
+    Sprite character({240, 136}, {30, 53}, {"sprites/character/character.png", 1, 0});
     character.transform.scale.x *= 0.5;
     character.transform.scale.y *=0.5;
 
+    // title screen sprite
+    Sprite title({0,0}, {480, 288}, {"sprites/title.png", 1, 0});
+    title.layer = 1;
+    title.transform.position.x = 240;
+    title.transform.position.y = 140;
 
+    // level select screen sprite
+    Sprite levelSelect({0,0}, {480, 288}, {"sprites/level select.png"}, 0, 0})
+    levelSelect.layer = 1;
+    levelSelect.transform.position.x = 240;
+    levelSelect.transform.position.y = 140;
+
+    /* not finished / files dont exist yet but will do, commented out for now
+    
+    // red enemy (level 1) sprite
+    Sprite redBasic({0,0}, {16,26}, {"sprites/enemies/red/enemy.png", 0, 0})
+    
+    // blue enemy (level 2) sprite
+    Sprite blueBasic({0,0}, {16,26}, {"sprites/enemies/blue/enemy.png", 0, 0})
+
+    // green enemy (level 3) sprite
+    Sprite greenBasic({0,0}, {16,26}, {"sprites/enemies/green/enemy.png", 0, 0})
+    
+    // purple enemy (level 4) sprite
+    Sprite purpleBasic({0,0}, {16,26}, {"sprites/enemies/purple/enemy.png", 0, 0})
+    
+    // black enemy (level 5) sprite
+    Sprite blackBasic({0,0}, {16,26}, {"sprites/enemies/black/enemy.png", 0, 0})
+    */
+
+    // simple confirm click
     Clip click("audio/click.wav", false, false);
 
-
-    Sprite bg({0,0}, {384, 384}, {"maps/pngs/bg.png", 0, 0});
-    bg.layer = -2;
-    bg.transform.scale.x *= 5;
-    bg.transform.scale.y *= 5;
-    
-
+    // set camera; may be unneeded but we leave it in
     QGCamera2D camera = QGCamera2D();
     camera.position.x = 0;
     camera.position.y = 0;
     camera.rotation = 0;
 
-
+    //set camera to this camera
     QuickGame::Graphics::set_camera(camera);
-     Sprite title({0,0}, {480, 288}, {"sprites/title.png", 1, 0});
-    title.layer = 1;
-    title.transform.position.x = 240;
-    title.transform.position.y = 140;
-    title.transform.rotation = 180;
+
     while(running()){
         update();
 
@@ -95,9 +133,20 @@ int main(int argc, char** argv){
         character.draw();
 
         if(isTitle){
-            title.draw();
+            title.draw_flipped(QG_FLIP_HORIZONTAL);
             if(button_pressed(PSP_CTRL_CROSS)){
                 isTitle = false;
+            }
+        }
+        if(isLevelSelect) {
+            levelSelect.draw();
+            if(button_pressed(PSP_CTRL_LTRIGGER)) {
+                isLevelSelect = false;
+                isBasic = true;
+            }
+            if(button_pressed(PSP_CTRL_RTRIGGER)) {
+                isLevelSelect = false;
+                isCurves = true;
             }
         }
         end_frame(true);
