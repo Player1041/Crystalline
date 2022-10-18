@@ -3,7 +3,6 @@
 #include <QuickGame.hpp>
 #include <pspctrl.h>
 
-
 // any namespaces
 using namespace QuickGame;
 using namespace QuickGame::Graphics;
@@ -48,16 +47,23 @@ int main(int argc, char** argv){
     character.transform.scale.y *=0.5;
 
     // title screen sprite
-    Sprite title({0,0}, {480, 288}, {"sprites/title.png", 1, 0});
+    Sprite title({0,0}, {480, 288}, {"screens/title.png", 1, 0});
     title.layer = 1;
     title.transform.position.x = 240;
     title.transform.position.y = 140;
 
     // level select screen sprite
-    Sprite levelSelect({0,0}, {480, 288}, {"sprites/level select.png", 1, 0});
+    Sprite levelSelect({0,0}, {480, 288}, {"screens/level select.png", 1, 0});
     levelSelect.layer = 1;
     levelSelect.transform.position.x = 240;
     levelSelect.transform.position.y = 140;
+
+    // pause menu screen sprite
+    Sprite pauseMenu({0,0}, {480, 288}, {"screens/pause.png", 1, 0});
+    pauseMenu.layer = 4;
+    pauseMenu.transform.position.x = 240;
+    pauseMenu.transform.position.y = 140;
+
 
     /* not finished / files dont exist yet but will do, commented out for now
     
@@ -90,8 +96,9 @@ int main(int argc, char** argv){
     QuickGame::Graphics::set_camera(camera);
 
     while(running()){
-        update();
-
+        if(!isPause){
+            update();
+        }
         if(button_held(PSP_CTRL_UP)) {
             if(character.transform.position.y > 10) {
                 character.transform.position.y += 1.5f;
@@ -152,11 +159,30 @@ int main(int argc, char** argv){
         if(isBasic) {
             basicMap.draw();
             character.draw();
+            
+            if(button_pressed(PSP_CTRL_START)) { 
+                isPause = true;
+                
+            }
+            
+        }  
+        
+        if(isPause) {
+            pauseMenu.draw();
+            if(button_released(PSP_CTRL_START)) {
+                isPause = false;
+            }
         }
+        
+        
 
         if(isCurves) {
             curveMap.draw();
             character.draw();
+            if(button_pressed(PSP_CTRL_START)) { 
+                isPause = true;
+                isCurves = false;
+            }
         }
 
         end_frame(true);

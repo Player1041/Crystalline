@@ -18,7 +18,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 161.33333333333331,
-                "y": 133
+                "y": 215
             }
         },
         "grassy terrain.tsx": {
@@ -40,7 +40,7 @@
             "selectedLayer": 1,
             "viewCenter": {
                 "x": 174,
-                "y": 145.66666666666669
+                "y": 146.33333333333334
             }
         }
     },
