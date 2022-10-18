@@ -46,19 +46,14 @@ int main(int argc, char** argv){
 
 
     QuickGame::Graphics::set_camera(camera);
-     Sprite title({0,0}, {480, 288}, {"maps/pngs/curves.png", 0, 0});
-    while(running()){
-        update();
-        if(isTitle){
-            
+     Sprite title({0,0}, {480, 288}, {"sprites/title.png", 1, 0});
     title.layer = 1;
     title.transform.position.x = 240;
     title.transform.position.y = 140;
-            title.draw();
-            if(PSP_CTRL_CROSS){
-                isTitle = false;
-            }
-        }
+    title.transform.rotation = 180;
+    while(running()){
+        update();
+
         if(button_held(PSP_CTRL_UP)) {
             if(character.transform.position.y > 10) {
                 character.transform.position.y += 1.5f;
@@ -94,11 +89,17 @@ int main(int argc, char** argv){
         
         start_frame();
         clear();
-
+        set2D();
         testMap.draw();
         
         character.draw();
 
+        if(isTitle){
+            title.draw();
+            if(button_pressed(PSP_CTRL_CROSS)){
+                isTitle = false;
+            }
+        }
         end_frame(true);
     }
 
