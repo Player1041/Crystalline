@@ -23,7 +23,7 @@ int main(int argc, char** argv){
 
     // various draw functions needed
     bool isTitle = true;
-    bool isLevelSelect = true;
+    bool isLevelSelect = false;
     bool isBasic = false;
     bool isCurves = false;
     bool isPause = false;
@@ -31,16 +31,16 @@ int main(int argc, char** argv){
     // sprite loading
 
     // basic map
-    Sprite testMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
-    testMap.layer = -1;
-    testMap.transform.position.x = 240;
-    testMap.transform.position.y = 140;
+    Sprite basicMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
+    basicMap.layer = -1;
+    basicMap.transform.position.x = 240;
+    basicMap.transform.position.y = 140;
 
     // curves map
     Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 1, 0});
     curveMap.layer = -1;
     curveMap.transform.position.x = 240;
-    curveMap.transform.position.y = 120;
+    curveMap.transform.position.y = 130;
 
     // character sprite
     Sprite character({240, 136}, {30, 53}, {"sprites/character/character.png", 1, 0});
@@ -54,7 +54,7 @@ int main(int argc, char** argv){
     title.transform.position.y = 140;
 
     // level select screen sprite
-    Sprite levelSelect({0,0}, {480, 288}, {"sprites/level select.png"}, 0, 0})
+    Sprite levelSelect({0,0}, {480, 288}, {"sprites/level select.png", 1, 0});
     levelSelect.layer = 1;
     levelSelect.transform.position.x = 240;
     levelSelect.transform.position.y = 140;
@@ -128,16 +128,15 @@ int main(int argc, char** argv){
         start_frame();
         clear();
         set2D();
-        testMap.draw();
-        
-        character.draw();
 
         if(isTitle){
-            title.draw_flipped(QG_FLIP_HORIZONTAL);
+            title.draw();
             if(button_pressed(PSP_CTRL_CROSS)){
                 isTitle = false;
+                isLevelSelect = true;
             }
         }
+
         if(isLevelSelect) {
             levelSelect.draw();
             if(button_pressed(PSP_CTRL_LTRIGGER)) {
@@ -149,6 +148,17 @@ int main(int argc, char** argv){
                 isCurves = true;
             }
         }
+
+        if(isBasic) {
+            basicMap.draw();
+            character.draw();
+        }
+
+        if(isCurves) {
+            curveMap.draw();
+            character.draw();
+        }
+
         end_frame(true);
     }
 
