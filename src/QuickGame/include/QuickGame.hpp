@@ -1,3 +1,4 @@
+#pragma once
 /**
  * @file QuickGame.hpp
  * @author Nathan Bourgeois (iridescentrosesfall@gmail.com)

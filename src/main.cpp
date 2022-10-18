@@ -2,6 +2,7 @@
 // includes
 #include <QuickGame.hpp>
 #include <pspctrl.h>
+#include "collision.hpp"
 
 // any namespaces
 using namespace QuickGame;
@@ -186,6 +187,7 @@ int main(int argc, char** argv){
         }
 
         end_frame(true);
+        
     }
 
     QuickGame::terminate();
