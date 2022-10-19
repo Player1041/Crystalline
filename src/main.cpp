@@ -31,6 +31,7 @@ int main(int argc, char** argv){
     // sprite loading
 
     // basic map
+    QGTexture mapCollBase = *QuickGame_Texture_Load("maps/pngs/test.png", 0, 0);
     Sprite basicMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
     basicMap.layer = -1;
     basicMap.transform.position.x = 240;
@@ -95,7 +96,7 @@ int main(int argc, char** argv){
 
     //set camera to this camera
     QuickGame::Graphics::set_camera(camera);
-
+    FILE *file = fopen("log.txt", "wr");
     while(running()){
         if(!isPause){
             update();
@@ -185,9 +186,19 @@ int main(int argc, char** argv){
                 isCurves = false;
             }
         }
-
-        end_frame(true);
         
+        end_frame(true);
+        //collision
+        int charx = character.transform.position.x + 2;
+        int chary = character.transform.position.y + 2;
+        int r = getRed(charx, chary, mapCollBase);
+        if(r == -2003365){
+            character.transform.position.x = 80;
+            character.transform.position.y = 136;
+            isPause = true;
+        }
+        
+            fprintf(file, "%d\n", r);
     }
 
     QuickGame::terminate();

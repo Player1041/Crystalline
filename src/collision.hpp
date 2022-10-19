@@ -29,7 +29,7 @@ int getRed(int x, int y, QGTexture tex)
 		    int y_in_box = y - (box_y * box_height);
 
 		    int end_index = box_first_index + ((x_in_box*2) + (y_in_box*box_width*2));
-
-            return testImage->data[end_index];
+            u32 returnval = ((uint32_t*)testImage->data)[end_index];
+            return returnval;
             //testImage->ImageData[end_index+1] >> 8;
 		}
