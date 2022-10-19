@@ -72,24 +72,25 @@ int main(int argc, char** argv){
     pauseMenu.transform.position.x = 240;
     pauseMenu.transform.position.y = 140;
 
-
-    /* not finished / files dont exist yet but will do, commented out for now
+    Sprite gameOver({0,0}, {480, 288}, {"screens/game over.png", 1, 0});
+    gameOver.layer = 4;
+    gameOver.transform.position.x = 240;
+    gameOver.transform.position.y = 140;
     
     // red enemy (level 1) sprite
-    Sprite redBasic({0,0}, {16,26}, {"sprites/enemies/red/enemy.png", 0, 0})
+    Sprite redEnemy({100,120}, {16,26}, {"sprites/enemies/red/enemy.png", 0, 0});
     
     // blue enemy (level 2) sprite
-    Sprite blueBasic({0,0}, {16,26}, {"sprites/enemies/blue/enemy.png", 0, 0})
+    Sprite blueEnemy({0,0}, {16,26}, {"sprites/enemies/blue/enemy.png", 0, 0});
 
     // green enemy (level 3) sprite
-    Sprite greenBasic({0,0}, {16,26}, {"sprites/enemies/green/enemy.png", 0, 0})
+    Sprite greenEnemy({0,0}, {16,26}, {"sprites/enemies/green/enemy.png", 0, 0});
     
     // purple enemy (level 4) sprite
-    Sprite purpleBasic({0,0}, {16,26}, {"sprites/enemies/purple/enemy.png", 0, 0})
+    Sprite purpleEnemy({0,0}, {16,26}, {"sprites/enemies/purple/enemy.png", 0, 0});
     
     // black enemy (level 5) sprite
-    Sprite blackBasic({0,0}, {16,26}, {"sprites/enemies/black/enemy.png", 0, 0})
-    */
+    Sprite blackEnemy({0,0}, {16,26}, {"sprites/enemies/black/enemy.png", 0, 0});
 
     // simple confirm click
     Clip click("audio/click.wav", false, false);
@@ -103,7 +104,7 @@ int main(int argc, char** argv){
     //set camera to this camera
     QuickGame::Graphics::set_camera(camera);
     FILE *file = fopen("log.txt", "wr");
-    FILE highScore = fopen("data/highscores.txt", "a+")
+    // FILE highScore = fopen("data/highscores.txt", "a+")
 
     while(running()){
         if(!stopEnemy){
@@ -169,13 +170,22 @@ int main(int argc, char** argv){
         if(isBasic) {
             basicMap.draw();
             character.draw();
-            
+            redEnemy.draw();
             if(button_pressed(PSP_CTRL_START)) { 
                 isPause = true;
-                stopEnemy = true;
+                stopEnemy = false;
             }
             
         }  
+
+        if(isCurves) {
+            curveMap.draw();
+            character.draw();
+            if(button_pressed(PSP_CTRL_START)) { 
+                isPause = true;
+                stopEnemy = false;
+            }
+        }
         
         if(isPause) {
             pauseMenu.draw();
@@ -184,21 +194,9 @@ int main(int argc, char** argv){
                 isPause = false;
             }
         }
-        
-        
-
-        if(isCurves) {
-            curveMap.draw();
-            character.draw();
-            if(button_pressed(PSP_CTRL_START)) { 
-                isPause = true;
-                isCurves = false;
-            }
-        }
-
 
         end_frame(true);
-
+/*
         //collision for out of bounds
         int charx = character.transform.position.x + 2;
         int chary = character.transform.position.y + 2;
@@ -208,21 +206,21 @@ int main(int argc, char** argv){
             character.transform.position.y = 136;
             isPause = true;
         }
-        
-            fprintf(file, "%d\n", r);
+*/        
+            //fprintf(file, "%d\n", r);
 
         //life system
-        /*
-        commented out as pseudocode
 
-        if character collides with enemy {
-            lives = lives -1
+        //commented out as pseudocode
+
+        if(character.intersects(redEnemy)) {
+            lives = lives -1;
             if(lives = 0) {
-                fprintf(highscore, "User: player | High Score: insert score here | Wave: wave num here")
                 gameOver.draw();
             }
-        }
-        */
+        } 
+
+
     }
 
     QuickGame::terminate();

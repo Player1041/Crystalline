@@ -26,6 +26,14 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "pause.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 219,
+                "y": 253.5
+            }
+        },
         "skt.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 1,
