@@ -21,12 +21,18 @@ int main(int argc, char** argv){
     // set camera to 2d
     set2D();
 
-    // various draw functions needed
+    // various variables defined
     bool isTitle = true;
     bool isLevelSelect = false;
     bool isBasic = false;
     bool isCurves = false;
     bool isPause = false;
+    bool stopEnemy = false;
+    int wave = 1;
+    int lives = 3;
+    
+
+
 
     // sprite loading
 
@@ -97,8 +103,10 @@ int main(int argc, char** argv){
     //set camera to this camera
     QuickGame::Graphics::set_camera(camera);
     FILE *file = fopen("log.txt", "wr");
+    FILE highScore = fopen("data/highscores.txt", "a+")
+
     while(running()){
-        if(!isPause){
+        if(!stopEnemy){
             update();
         }
         if(button_held(PSP_CTRL_UP)) {
@@ -164,14 +172,15 @@ int main(int argc, char** argv){
             
             if(button_pressed(PSP_CTRL_START)) { 
                 isPause = true;
-                
+                stopEnemy = true;
             }
             
         }  
         
         if(isPause) {
             pauseMenu.draw();
-            if(button_released(PSP_CTRL_START)) {
+            character.draw();
+            if(button_pressed(PSP_CTRL_CIRCLE)) {
                 isPause = false;
             }
         }
@@ -186,9 +195,11 @@ int main(int argc, char** argv){
                 isCurves = false;
             }
         }
-        
+
+
         end_frame(true);
-        //collision
+
+        //collision for out of bounds
         int charx = character.transform.position.x + 2;
         int chary = character.transform.position.y + 2;
         int r = getRed(charx, chary, mapCollBase);
@@ -199,6 +210,19 @@ int main(int argc, char** argv){
         }
         
             fprintf(file, "%d\n", r);
+
+        //life system
+        /*
+        commented out as pseudocode
+
+        if character collides with enemy {
+            lives = lives -1
+            if(lives = 0) {
+                fprintf(highscore, "User: player | High Score: insert score here | Wave: wave num here")
+                gameOver.draw();
+            }
+        }
+        */
     }
 
     QuickGame::terminate();
