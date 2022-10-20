@@ -81,16 +81,16 @@ int main(int argc, char** argv){
     Sprite redEnemy({100,120}, {16,26}, {"sprites/enemies/red/enemy.png", 0, 0});
     
     // blue enemy (level 2) sprite
-    Sprite blueEnemy({0,0}, {16,26}, {"sprites/enemies/blue/enemy.png", 0, 0});
+    Sprite blueEnemy({100,120}, {16,26}, {"sprites/enemies/blue/enemy.png", 0, 0});
 
     // green enemy (level 3) sprite
-    Sprite greenEnemy({0,0}, {16,26}, {"sprites/enemies/green/enemy.png", 0, 0});
+    Sprite greenEnemy({100,120}, {16,26}, {"sprites/enemies/green/enemy.png", 0, 0});
     
     // purple enemy (level 4) sprite
-    Sprite purpleEnemy({0,0}, {16,26}, {"sprites/enemies/purple/enemy.png", 0, 0});
+    Sprite purpleEnemy({100,120}, {16,26}, {"sprites/enemies/purple/enemy.png", 0, 0});
     
     // black enemy (level 5) sprite
-    Sprite blackEnemy({0,0}, {16,26}, {"sprites/enemies/black/enemy.png", 0, 0});
+    Sprite blackEnemy({100,120}, {16,26}, {"sprites/enemies/black/enemy.png", 0, 0});
 
     // audio loading
 
@@ -113,7 +113,7 @@ int main(int argc, char** argv){
 
     //set camera to this camera
     QuickGame::Graphics::set_camera(camera);
-    FILE *file = fopen("log.txt", "wr");
+    FILE *file = fopen("data/log.txt", "wr");
     // FILE highScore = fopen("data/highscores.txt", "a+")
 
     while(running()){
