@@ -3,15 +3,53 @@
 #include <QuickGame.hpp>
 #include <pspctrl.h>
 #include <memory>
-#include "collision.hpp"
 #include <map>
+#include "collision.hpp"
+#include "state.hpp"
 
 // any namespaces
 using namespace QuickGame;
 using namespace QuickGame::Graphics;
 
-// various variables defined
-bool isTitle = true;
+std::shared_ptr<Audio::Clip> click; //click
+std::shared_ptr<Audio::Clip> startup;//startup noise
+
+namespace StateManagement {
+    std::vector<std::shared_ptr<State>> stateStack;
+    auto set_state(std::shared_ptr<State> state) {
+        stateStack.clear();
+        stateStack.push_back(state);
+        stateStack.shrink_to_fit();
+    }
+} // StateManagement
+
+class TitleState final : public State {
+    std::shared_ptr<Sprite> title; // title screen sprite
+
+    public:
+    TitleState() {
+        // title screen sprite
+        title = std::make_shared<Sprite>(
+            QGVector2{240,140}, 
+            QGVector2{480, 288}, 
+            QGTexInfo{"screens/title.png", 1, 0}
+        );
+        title->layer = 1;
+    }
+    ~TitleState() = default;
+
+    auto update(double dt) -> void override {
+        if(Input::button_pressed(PSP_CTRL_CROSS)){
+            startup->play(0);
+            // set_state(std::make_shared<MenuState>());
+        }
+    }
+
+    auto draw(double dt) -> void override {
+        title->draw();
+    }
+};
+
 bool isLevelSelect = false;
 bool isBasic = false;
 bool isCurves = false;
@@ -21,25 +59,25 @@ bool isDead = false;
 int wave = 1;
 int lives = 3;
 
-std::map<int, std::string> enemyRanks;
-std::shared_ptr<Sprite> enemySprites[5];    
+std::map<int, std::string> enemyRanks = {
+    {0, "red"},
+    {1, "blue"},
+    {2, "green"},
+    {3, "purple"},
+    {4, "black"}
+};
 
-std::shared_ptr<Audio::Clip> click; //click
-std::shared_ptr<Audio::Clip> startup;//startup noise
+std::shared_ptr<Sprite> enemySprites[5];    
 
 std::shared_ptr<Sprite> basicMap;
 std::shared_ptr<Sprite> curveMap; // curves map
 std::shared_ptr<Sprite> character; // character sprite
-std::shared_ptr<Sprite> title; // title screen sprite
 std::shared_ptr<Sprite> levelSelect; // level select screen sprite
 std::shared_ptr<Sprite> pauseMenu; // pause menu screen sprite
 std::shared_ptr<Sprite> gameOver;
 
 
 auto update() -> void {
-    if(!stopEnemy)
-        Input::update();
-    
     if(Input::button_held(PSP_CTRL_UP)) 
         character->transform.position.y += 1.5f;
     
@@ -66,8 +104,8 @@ auto update() -> void {
 
     // Logic that should be here, not draw
 
-/*
     //collision for out of bounds
+    /*
     int charx = character.transform.position.x + 2;
     int chary = character.transform.position.y + 2;
     int r = getRed(charx, chary, mapCollBase);
@@ -76,21 +114,16 @@ auto update() -> void {
         character.transform.position.y = 136;
         isPause = true;
     }
-*/       
-        //fprintf(file, "%d\n", r);
+    */       
+    
+    //fprintf(file, "%d\n", r);
+    
+    
     //life system
     //commented out as pseudocode
     //if(character->intersects(redEnemy)) {
     //    lives = lives -1;
     //} 
-
-    if(isTitle){
-        if(Input::button_pressed(PSP_CTRL_CROSS)){
-            isTitle = false;
-            isLevelSelect = true;
-            startup->play(0);
-        }
-    }
 
     if(isLevelSelect) {
         if(Input::button_pressed(PSP_CTRL_LTRIGGER)) {
@@ -137,13 +170,6 @@ auto update() -> void {
 }
 
 auto draw() -> void {
-    start_frame();
-    clear();
-    set2D();
-    
-    if(isTitle){
-        title->draw();
-    }
     
     if(isLevelSelect) {
         levelSelect->draw();
@@ -154,12 +180,10 @@ auto draw() -> void {
         curveMap->draw();
     }
     
-    if(!isTitle && !isLevelSelect){
-        //We're actually playing the game
-        character->draw();
-        //redEnemy->draw();
-    }
-
+    //We're actually playing the game
+    character->draw();
+    //redEnemy->draw();
+    
     if(isPause) {
         pauseMenu->draw();
         //FIXME: Is this draw call necessary?
@@ -168,19 +192,9 @@ auto draw() -> void {
 
     if(isDead) 
         gameOver->draw();
-    
-    end_frame(true);
 }
 
 auto main() -> int {
-    enemyRanks = {
-        {0, "red"},
-        {1, "blue"},
-        {2, "green"},
-        {3, "purple"},
-        {4, "black"}
-    };
-
     // Initialize
     QuickGame::init();    
     
@@ -213,14 +227,6 @@ auto main() -> int {
     );
     character->transform.scale.x *= 0.5f;
     character->transform.scale.y *= 0.5f;
-
-    // title screen sprite
-    title = std::make_shared<Sprite>(
-        QGVector2{240,140}, 
-        QGVector2{480, 288}, 
-        QGTexInfo{"screens/title.png", 1, 0}
-    );
-    title->layer = 1;
 
     // level select screen sprite
     levelSelect = std::make_shared<Sprite>(
@@ -257,10 +263,6 @@ auto main() -> int {
         );
     }
 
-    // audio loading
-    click = std::make_shared<Audio::Clip>("sounds/click.wav", false, false);
-    startup = std::make_shared<Audio::Clip>("sounds/startup.wav", false, false);
-
     //pDeath = std::make_shared<Audio::Clip>("sounds/death.wav", false, false); //player death
     //eDeath = std::make_shared<Audio::Clip>("sounds/edeath.wav", false, false); //enemy death
     //bDeath = std::make_shared<Audio::Clip>("sounds/bdeath.wav", false, false); //boss death
@@ -268,9 +270,30 @@ auto main() -> int {
     // FILE* highScore = fopen("data/highscores.txt", "a+")
     // or you should use std::fstream here
 
+    QGTimer timer;
+    QuickGame_Timer_Start(&timer);
+
+    // Audio Loading
+    click = std::make_shared<Audio::Clip>("sounds/click.wav", false, false);
+    startup = std::make_shared<Audio::Clip>("sounds/startup.wav", false, false);
+
+    StateManagement::set_state(std::shared_ptr<TitleState>());
+
     while(running()){
-        update();
-        draw();
+        auto dt = QuickGame_Timer_Delta(&timer);
+
+        if (!StateManagement::stateStack.empty()) {
+            Input::update();
+            StateManagement::stateStack.back()->update(dt);
+
+            Graphics::start_frame();
+            Graphics::clear();
+            Graphics::set2D();
+
+            StateManagement::stateStack.back()->draw(dt);
+
+            Graphics::end_frame(true);
+        }
     }
 
     // fclose(highScore)
