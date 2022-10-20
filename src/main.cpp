@@ -14,22 +14,42 @@ using namespace QuickGame::Graphics;
 
 std::shared_ptr<Audio::Clip> click; //click
 
-//std::vector<std::shared_ptr<State>> StateManagement::stateStack;
-
+/**
+ * @brief Defines a basic enemy to draw on screen
+ * Enemy has a specific type (color)
+ * Enemy update makes it chase players in a range
+ * Transform is its current position
+ *
+ */
 class Enemy {
     public:
+    /**
+     * @brief Construct a new Enemy object
+     * 
+     * @param type Enemy color type based on enemyRank
+     */
     Enemy(int type) : m_Type(type) {}
     virtual ~Enemy() = default;
 
+    /**
+     * @brief Chase the player
+     * 
+     * @param playerPosition Player position
+     * @param dt Delta Time
+     */
     auto update(QGVector2 playerPosition, double dt) -> void {
+        // Calculate difference between our positions
         auto diff = QGVector2{playerPosition.x - transform.position.x, playerPosition.y - transform.position.y};
+        // Get length via distance formula = sqrtf(x^2 + y^2 + ...)
         auto len = sqrtf(diff.x * diff.x + diff.y * diff.y);
 
+        // Do not attempt normalization below length of 1
         if(len > 1.0f){
             diff.x /= len;
             diff.y /= len;
         }
 
+        // If we're within a certain range, chase it
         if(len < 60){
             transform.position.x += diff.x * 0.5f;
             transform.position.y += diff.y * 0.5f;
@@ -40,6 +60,14 @@ class Enemy {
     int m_Type;
 };
 
+/**
+ * @brief Manages Enemy Spawns
+ * enemies Map contains a list of existing enemies
+ * ecount Is the enemy count
+ * add_enemy() method Creates new enemies
+ * update() method Updates all enemies
+ * draw() method Draws all enemies
+ */
 class EnemyManager final {
     std::map<int, std::shared_ptr<Enemy>> enemies;
     int ecount;
@@ -50,6 +78,12 @@ class EnemyManager final {
         enemies.clear();
     }
 
+    /**
+     * @brief Create an enemy at a position with a set type
+     * 
+     * @param position Position
+     * @param type Type
+     */
     auto add_enemy(QGVector2 position, int type) -> void {
         enemies.emplace(
             ecount, 
@@ -61,11 +95,25 @@ class EnemyManager final {
 
         ecount++;
     }
+
+    /**
+     * @brief Create a random enemy type at a position
+     * 
+     * @param position Position
+     */
     auto add_enemy_random(QGVector2 position) -> void {
         add_enemy(position, rand() % 5);
     }
 
+    /**
+     * @brief Updates all enemies
+     * 
+     * @param pos Player pos / pos to track
+     * @param dt Delta Time
+     */
     auto update(QGVector2 pos, double dt) -> void {
+        //TODO: If you kill an enemy, add it to the ids list
+        // What conditions result in the enemy dying?
         std::vector<int> ids;
 
         for(auto& [id, e] : enemies) {
@@ -77,6 +125,11 @@ class EnemyManager final {
         }
     }
 
+    /**
+     * @brief Draws all enemies onto the screen
+     * 
+     * @param eArray Enemy Sprite Array
+     */
     auto draw(std::array<std::shared_ptr<Sprite>, 5>& eArray) -> void {
         for(auto& [id, e] : enemies) {
             eArray[e->m_Type]->transform = e->transform;
@@ -85,7 +138,15 @@ class EnemyManager final {
     }
 };
 
+/**
+ * @brief Main game state
+ * 
+ */
 class GameState final : public State {
+    /**
+     * @brief Enemy Ranks based on previous comment
+     * 
+     */
     std::map<int, std::string> enemyRanks = {
         {0, "red"},
         {1, "blue"},
@@ -111,6 +172,11 @@ class GameState final : public State {
 
     EnemyManager eman;
 public:
+    /**
+     * @brief Construct a new Game State object
+     * 
+     * @param level_number Level to load (0 = basic, 1 = curves)
+     */
     GameState(int level_number): m_LevelNumber(level_number) {
         basicMap = std::make_shared<Sprite>(
             QGVector2{240,140}, 
@@ -173,7 +239,13 @@ public:
     }
     ~GameState() = default;
 
+    /**
+     * @brief Update the game state
+     * 
+     * @param dt Delta Time
+     */
     auto update(double dt) -> void override {
+        // Move character
         if(Input::button_held(PSP_CTRL_UP)) 
             character->transform.position.y += 1.5f;
         
@@ -186,6 +258,7 @@ public:
         if(Input::button_held(PSP_CTRL_LEFT)) 
             character->transform.position.x -= 1.5f;
 
+        // Character bounds check
         if(character->transform.position.y < 10) 
             character->transform.position.y = 10;
 
@@ -221,39 +294,48 @@ public:
         //    lives = lives -1;
         //} 
 
+        // Check to pause
         if(Input::button_pressed(PSP_CTRL_START)) { 
             isPause = !isPause;
             click->play(0);
         }
 
+        // Death condition
         if(!isDead) {
             if(lives = 0) {
                 isDead = true;
                 //pDeath.play(0);
             }
         } else if(isDead && Input::button_pressed(PSP_CTRL_SQUARE)) {
+            // Go back to level state on death
             StateManagement::set_state(std::make_shared<LevelState>()); //Go back to level select
         }
 
+        // If Not Paused, Update Enemies
         if(!isPause){
             eman.update(character->transform.position, dt);
         }
     }
 
     auto draw(double dt) -> void override {
+        // Draw map
         if(m_LevelNumber == 0) {
             basicMap->draw();
         } else if(m_LevelNumber == 1) {
             curveMap->draw();
         }
+
+        // Draw Enemies
+        eman.draw(enemySprites);
         
+        // Draw Pause Menu
         if(isPause) 
             pauseMenu->draw();
         
-        //We're actually playing the game
+        // Draw Character (above pause if necessary)
         character->draw();
-        eman.draw(enemySprites);
         
+        // Draw Game Over
         if(isDead) 
             gameOver->draw();
     }
@@ -269,7 +351,12 @@ LevelState::LevelState() {
     levelSelect->layer = 1;
     sceKernelDcacheWritebackInvalidateAll();
 }
-    
+
+/**
+ * @brief Update -- choose basic or curved state
+ * 
+ * @param dt Unused
+ */
 auto LevelState::update(double dt) -> void {
     if(Input::button_pressed(PSP_CTRL_LTRIGGER)) {
         click->play(0);
@@ -283,10 +370,19 @@ auto LevelState::update(double dt) -> void {
     }
 }
 
+/**
+ * @brief Draw Level Selection Menu
+ * 
+ * @param dt Unused
+ */
 auto LevelState::draw(double dt) -> void {
     levelSelect->draw();
 }
 
+/**
+ * @brief Entry point!
+ * 
+ */
 auto main() -> int {
     // Initialize
     QuickGame::init();    
@@ -294,7 +390,6 @@ auto main() -> int {
     // set camera to 2d
     Graphics::set2D();
     
-
     // FILE* highScore = fopen("data/highscores.txt", "a+")
     // or you should use std::fstream here
     // fclose(highScore)
@@ -308,25 +403,30 @@ auto main() -> int {
     //eDeath = std::make_shared<Audio::Clip>("sounds/edeath.wav", false, false); //enemy death
     //bDeath = std::make_shared<Audio::Clip>("sounds/bdeath.wav", false, false); //boss death
 
+    // Set base state
     StateManagement::set_state(std::make_shared<TitleState>());
 
+    // While running
     while(running()){
         auto dt = QuickGame_Timer_Delta(&timer);
 
-        if (!StateManagement::stateStack.empty()) {
-            Input::update();
-            StateManagement::stateStack.back()->update(dt);
+        // Make sure we have a state to use
+        if (StateManagement::stateStack.empty())
+            continue;
 
-            Graphics::start_frame();
-            Graphics::clear();
-            Graphics::set2D();
+        // Update Sequence
+        Input::update();
+        StateManagement::stateStack.back()->update(dt);
 
-            StateManagement::stateStack.back()->draw(dt);
-
-            Graphics::end_frame(true);
-        }
+        // Draw Sequence
+        Graphics::start_frame();
+        Graphics::clear();
+        Graphics::set2D();
+        StateManagement::stateStack.back()->draw(dt);
+        Graphics::end_frame(true);   
     }
 
+    // Terminate
     QuickGame::terminate();
     return 0;
 }

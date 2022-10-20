@@ -11,6 +11,10 @@
 using namespace QuickGame;
 using namespace QuickGame::Graphics;
 
+/**
+ * @brief Level State (Level Selection) allows the choice between two maps
+ * 
+ */
 class LevelState final : public State {
     std::shared_ptr<Sprite> levelSelect; // level select screen sprite
 
