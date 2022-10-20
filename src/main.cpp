@@ -28,6 +28,7 @@ int main(int argc, char** argv){
     bool isCurves = false;
     bool isPause = false;
     bool stopEnemy = false;
+    bool isDead = false;
     int wave = 1;
     int lives = 3;
     
@@ -204,7 +205,7 @@ int main(int argc, char** argv){
             character.draw();
             if(button_pressed(PSP_CTRL_CIRCLE)) {
                 isPause = false;
-                click.play(0)
+                click.play(0);
             }
         }
 
@@ -233,7 +234,7 @@ int main(int argc, char** argv){
         if(!isDead) {
             if(lives = 0) {
                 isDead = true;
-                pDeath.play(0);
+                //pDeath.play(0);
             }
         }
 

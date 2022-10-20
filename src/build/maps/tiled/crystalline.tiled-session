@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "",
+    "activeFile": "clouds.tsx",
     "expandedProjectPaths": [
         "."
     ],
@@ -11,7 +11,7 @@
     "fileStates": {
         "clouds.tsx": {
             "scaleInDock": 1,
-            "scaleInEditor": 4
+            "scaleInEditor": 5.5
         },
         "curves.tmx": {
             "scale": 1.5,
@@ -28,10 +28,10 @@
         },
         "pause.tmx": {
             "scale": 1,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 219,
-                "y": 253.5
+                "x": 233,
+                "y": 190.5
             }
         },
         "skt.tsx": {
@@ -47,7 +47,7 @@
             "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 174,
+                "x": 173.33333333333331,
                 "y": 146.33333333333334
             }
         }
@@ -59,14 +59,17 @@
     "openFiles": [
         "test.tmx",
         "clouds.tsx",
-        "curves.tmx"
+        "curves.tmx",
+        "pause.tmx",
+        "sky.tsx"
     ],
     "project": "crystalline.tiled-project",
     "recentFiles": [
         "test.tmx",
-        "clouds.tsx",
-        "curves.tmx",
         "sky.tsx",
+        "pause.tmx",
+        "curves.tmx",
+        "clouds.tsx",
         "grassy terrain.tsx",
         "skt.tsx"
     ],
