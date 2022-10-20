@@ -2,216 +2,279 @@
 // includes
 #include <QuickGame.hpp>
 #include <pspctrl.h>
+#include <memory>
+#include <map>
 #include "collision.hpp"
+#include "titlestate.hpp"
+#include <pspkernel.h>
 
 // any namespaces
 using namespace QuickGame;
 using namespace QuickGame::Graphics;
-using namespace QuickGame::Input;
-using namespace QuickGame::Audio;
 
+std::shared_ptr<Audio::Clip> click; //click
 
+/**
+ * @brief Defines a basic enemy to draw on screen
+ * Enemy has a specific type (color)
+ * Enemy update makes it chase players in a range
+ * Transform is its current position
+ *
+ */
+class Enemy {
+    public:
+    /**
+     * @brief Construct a new Enemy object
+     * 
+     * @param type Enemy color type based on enemyRank
+     */
+    Enemy(int type) : m_Type(type) {}
+    virtual ~Enemy() = default;
 
+    /**
+     * @brief Chase the player
+     * 
+     * @param playerPosition Player position
+     * @param dt Delta Time
+     */
+    auto update(QGVector2 playerPosition, double dt) -> void {
+        // Calculate difference between our positions
+        auto diff = QGVector2{playerPosition.x - transform.position.x, playerPosition.y - transform.position.y};
+        // Get length via distance formula = sqrtf(x^2 + y^2 + ...)
+        auto len = sqrtf(diff.x * diff.x + diff.y * diff.y);
 
+        // Do not attempt normalization below length of 1
+        if(len > 1.0f){
+            diff.x /= len;
+            diff.y /= len;
+        }
 
-int main(int argc, char** argv){
-    // initalize QG
-    QuickGame::init();    
-    
-    // set camera to 2d
-    set2D();
+        // If we're within a certain range, chase it
+        if(len < 60){
+            transform.position.x += diff.x * 0.5f;
+            transform.position.y += diff.y * 0.5f;
+        }
+    }
 
-    // various variables defined
-    bool isTitle = true;
-    bool isLevelSelect = false;
-    bool isBasic = false;
-    bool isCurves = false;
+    QGTransform2D transform;
+    int m_Type;
+};
+
+/**
+ * @brief Manages Enemy Spawns
+ * enemies Map contains a list of existing enemies
+ * ecount Is the enemy count
+ * add_enemy() method Creates new enemies
+ * update() method Updates all enemies
+ * draw() method Draws all enemies
+ */
+class EnemyManager final {
+    std::map<int, std::shared_ptr<Enemy>> enemies;
+    int ecount;
+
+    public: 
+
+    EnemyManager() {
+        enemies.clear();
+    }
+
+    /**
+     * @brief Create an enemy at a position with a set type
+     * 
+     * @param position Position
+     * @param type Type
+     */
+    auto add_enemy(QGVector2 position, int type) -> void {
+        enemies.emplace(
+            ecount, 
+            std::make_shared<Enemy>(type)
+        );
+        enemies[ecount]->transform.position = position;
+        enemies[ecount]->transform.rotation = 0;
+        enemies[ecount]->transform.scale = {16, 26};
+
+        ecount++;
+    }
+
+    /**
+     * @brief Create a random enemy type at a position
+     * 
+     * @param position Position
+     */
+    auto add_enemy_random(QGVector2 position) -> void {
+        add_enemy(position, rand() % 5);
+    }
+
+    /**
+     * @brief Updates all enemies
+     * 
+     * @param pos Player pos / pos to track
+     * @param dt Delta Time
+     */
+    auto update(QGVector2 pos, double dt) -> void {
+        //TODO: If you kill an enemy, add it to the ids list
+        // What conditions result in the enemy dying?
+        std::vector<int> ids;
+
+        for(auto& [id, e] : enemies) {
+            e->update(pos, dt);
+        }
+
+        for(auto& id : ids) {
+            enemies.erase(id);
+        }
+    }
+
+    /**
+     * @brief Draws all enemies onto the screen
+     * 
+     * @param eArray Enemy Sprite Array
+     */
+    auto draw(std::array<std::shared_ptr<Sprite>, 5>& eArray) -> void {
+        for(auto& [id, e] : enemies) {
+            eArray[e->m_Type]->transform = e->transform;
+            eArray[e->m_Type]->draw();
+        }
+    }
+};
+
+/**
+ * @brief Main game state
+ * 
+ */
+class GameState final : public State {
+    /**
+     * @brief Enemy Ranks based on previous comment
+     * 
+     */
+    std::map<int, std::string> enemyRanks = {
+        {0, "red"},
+        {1, "blue"},
+        {2, "green"},
+        {3, "purple"},
+        {4, "black"}
+    };
+
+    std::array<std::shared_ptr<Sprite>, 5> enemySprites;    
+
+    std::shared_ptr<Sprite> basicMap;
+    std::shared_ptr<Sprite> curveMap; // curves map
+    std::shared_ptr<Sprite> character; // character sprite
+    std::shared_ptr<Sprite> pauseMenu; // pause menu screen sprite
+    std::shared_ptr<Sprite> gameOver;
+
+    int m_LevelNumber;
+
     bool isPause = false;
-    bool stopEnemy = false;
     bool isDead = false;
     int wave = 1;
     int lives = 3;
-    
+
+    EnemyManager eman;
+public:
+    /**
+     * @brief Construct a new Game State object
+     * 
+     * @param level_number Level to load (0 = basic, 1 = curves)
+     */
+    GameState(int level_number): m_LevelNumber(level_number) {
+        basicMap = std::make_shared<Sprite>(
+            QGVector2{240,140}, 
+            QGVector2{480, 288}, 
+            QGTexInfo{"maps/pngs/test.png", 0, 0}
+        );
+        basicMap->layer = -1;
+
+        // curves map
+        curveMap = std::make_shared<Sprite>(
+            QGVector2{240,130}, 
+            QGVector2{480, 288}, 
+            QGTexInfo{"maps/pngs/curves.png", 1, 0}
+        );
+        curveMap->layer = -1;
+
+        // character sprite
+        character = std::make_shared<Sprite>(
+            QGVector2{240, 136}, 
+            QGVector2{30, 53}, 
+            QGTexInfo{"sprites/character/character.png", 1, 0}
+        );
+        character->transform.scale.x *= 0.5f;
+        character->transform.scale.y *= 0.5f;
 
 
+        // pause menu screen sprite
+        pauseMenu = std::make_shared<Sprite>(
+            QGVector2{240,140}, 
+            QGVector2{480, 288}, 
+            QGTexInfo{"screens/pause.png", 1, 0}
+        );
+        pauseMenu->layer = 4;
 
-    // sprite loading
-
-    // basic map
-    QGTexture mapCollBase = *QuickGame_Texture_Load("maps/pngs/test.png", 0, 0);
-    Sprite basicMap({0,0}, {480, 288}, {"maps/pngs/test.png", 0, 0});
-    basicMap.layer = -1;
-    basicMap.transform.position.x = 240;
-    basicMap.transform.position.y = 140;
-
-    // curves map
-    Sprite curveMap({0,0}, {480, 288}, {"maps/pngs/curves.png", 1, 0});
-    curveMap.layer = -1;
-    curveMap.transform.position.x = 240;
-    curveMap.transform.position.y = 130;
-
-    // character sprite
-    Sprite character({240, 136}, {30, 53}, {"sprites/character/character.png", 1, 0});
-    character.transform.scale.x *= 0.5;
-    character.transform.scale.y *=0.5;
-
-    // title screen sprite
-    Sprite title({0,0}, {480, 288}, {"screens/title.png", 1, 0});
-    title.layer = 1;
-    title.transform.position.x = 240;
-    title.transform.position.y = 140;
-
-    // level select screen sprite
-    Sprite levelSelect({0,0}, {480, 288}, {"screens/level select.png", 1, 0});
-    levelSelect.layer = 1;
-    levelSelect.transform.position.x = 240;
-    levelSelect.transform.position.y = 140;
-
-    // pause menu screen sprite
-    Sprite pauseMenu({0,0}, {480, 288}, {"screens/pause.png", 1, 0});
-    pauseMenu.layer = 4;
-    pauseMenu.transform.position.x = 240;
-    pauseMenu.transform.position.y = 140;
-
-    Sprite gameOver({0,0}, {480, 288}, {"screens/game over.png", 1, 0});
-    gameOver.layer = 4;
-    gameOver.transform.position.x = 240;
-    gameOver.transform.position.y = 140;
-    
-    // red enemy (level 1) sprite
-    Sprite redEnemy({100,120}, {16,26}, {"sprites/enemies/red/enemy.png", 1, 0});
-    
-    // blue enemy (level 2) sprite
-    Sprite blueEnemy({100,120}, {16,26}, {"sprites/enemies/blue/enemy.png", 1, 0});
-
-    // green enemy (level 3) sprite
-    Sprite greenEnemy({100,120}, {16,26}, {"sprites/enemies/green/enemy.png", 1, 0});
-    
-    // purple enemy (level 4) sprite 
-    Sprite purpleEnemy({100,120}, {16,26}, {"sprites/enemies/purple/enemy.png", 1, 0});
-    
-    // black enemy (level 5) sprite
-    Sprite blackEnemy({100,120}, {16,26}, {"sprites/enemies/black/enemy.png", 1, 0});
-
-    // audio loading
-
-    Clip click("sounds/click.wav", false, false); //click
-
-    Clip startup("sounds/startup.wav", false, false); //startup noise
-
-    //Clip pDeath("sounds/death.wav", false, false); //player death
-
-    //Clip eDeath("sounds/edeath.wav", false, false); //enemy death
-
-    //Clip bDeath("sounds/bdeath.wav", false, false); //boss death
+        gameOver = std::make_shared<Sprite>(
+            QGVector2{240,140}, 
+            QGVector2{480, 288}, 
+            QGTexInfo{"screens/game over.png", 1, 0}
+        );
+        gameOver->layer = 4;
 
 
-    // set camera; may be unneeded but we leave it in
-    QGCamera2D camera = QGCamera2D();
-    camera.position.x = 0;
-    camera.position.y = 0;
-    camera.rotation = 0;
-
-    //set camera to this camera
-    QuickGame::Graphics::set_camera(camera);
-    // FILE *file = fopen("data/log.txt", "wr");
-    // FILE highScore = fopen("data/highscores.txt", "a+")
-
-    while(running()){
-        if(!stopEnemy){
-            update();
+        for(int i = 0; i < 5; i++) {
+            enemySprites[i] = std::make_shared<Sprite>(
+                QGVector2{100, 120},
+                QGVector2{16, 26},
+                QGTexInfo{
+                    ("sprites/enemies/" + enemyRanks[i] + "/front.png").c_str(), 
+                    0, 0
+                }
+            );
         }
 
-        if(button_held(PSP_CTRL_UP)) {
-            if(character.transform.position.y > 10) {
-                character.transform.position.y += 1.5f;
-            //camera.position.y += 2.0f;
-            }
+        for(int i = 0; i < 5; i++) {
+            eman.add_enemy_random({
+                static_cast<float>(rand() % 480), 
+                static_cast<float>(rand() % 272)
+            });
         }
+    }
+    ~GameState() = default;
 
-        if(button_held(PSP_CTRL_DOWN)) {
-            if(character.transform.position.y < 272) {
-                character.transform.position.y -= 1.5f;
-                //camera.position.y -= 2.0f;
-            }
-        }
-
-        if(button_held(PSP_CTRL_RIGHT)) {
-            if(character.transform.position.x < 480) {
-                character.transform.position.x += 1.5f;
-            // camera.position.x += 2.0f;
-            }
-        }
-
-        if(button_held(PSP_CTRL_LEFT)) {
-            if(character.transform.position.x > 10) {
-                character.transform.position.x -= 1.5f;
-                //camera.position.x -= 2.0f;
-            }
-        }
-
+    /**
+     * @brief Update the game state
+     * 
+     * @param dt Delta Time
+     */
+    auto update(double dt) -> void override {
+        // Move character
+        if(Input::button_held(PSP_CTRL_UP)) 
+            character->transform.position.y += 1.5f;
         
-        start_frame();
-        clear();
-        set2D();
+        if(Input::button_held(PSP_CTRL_DOWN))
+            character->transform.position.y -= 1.5f;
 
-        if(isTitle){
-            title.draw();
-            if(button_pressed(PSP_CTRL_CROSS)){
-                isTitle = false;
-                isLevelSelect = true;
-                startup.play(0);
-            }
-        }
+        if(Input::button_held(PSP_CTRL_RIGHT))
+            character->transform.position.x += 1.5f;
 
-        if(isLevelSelect) {
-            levelSelect.draw();
-            if(button_pressed(PSP_CTRL_LTRIGGER)) {
-                isLevelSelect = false;
-                isBasic = true;
-                click.play(0);
-            }
-            if(button_pressed(PSP_CTRL_RTRIGGER)) {
-                isLevelSelect = false;
-                isCurves = true;
-                click.play(0);
-            }
-        }
+        if(Input::button_held(PSP_CTRL_LEFT)) 
+            character->transform.position.x -= 1.5f;
 
-        if(isBasic) {
-            basicMap.draw();
-            character.draw();
-            redEnemy.draw();
-            if(button_pressed(PSP_CTRL_START)) { 
-                isPause = true;
-                stopEnemy = false;
-                click.play(0);
-            }
-        }  
+        // Character bounds check
+        if(character->transform.position.y < 10) 
+            character->transform.position.y = 10;
 
-        if(isCurves) {
-            curveMap.draw();
-            character.draw();
-            redEnemy.draw();
-            if(button_pressed(PSP_CTRL_START)) { 
-                isPause = true;
-                stopEnemy = false;
-                click.play(0);
-            }
-        }
-        
-        if(isPause) {
-            pauseMenu.draw();
-            character.draw();
-            if(button_pressed(PSP_CTRL_CIRCLE)) {
-                isPause = false;
-                click.play(0);
-            }
-        }
+        if(character->transform.position.x < 10) 
+            character->transform.position.x = 10;
 
-        end_frame(true);
-/*
+        if(character->transform.position.y > 272)
+            character->transform.position.y = 272;
+
+        if(character->transform.position.x > 480)
+            character->transform.position.x = 480;
+
+        // Logic that should be here, not draw
+
         //collision for out of bounds
+        /*
         int charx = character.transform.position.x + 2;
         int chary = character.transform.position.y + 2;
         int r = getRed(charx, chary, mapCollBase);
@@ -220,35 +283,150 @@ int main(int argc, char** argv){
             character.transform.position.y = 136;
             isPause = true;
         }
-*/        
-            //fprintf(file, "%d\n", r);
+        */       
+
+        //fprintf(file, "%d\n", r);
+
 
         //life system
-
         //commented out as pseudocode
+        //if(character->intersects(redEnemy)) {
+        //    lives = lives -1;
+        //} 
 
-        if(character.intersects(redEnemy)) {
-            lives = lives -1;
-        } 
+        // Check to pause
+        if(Input::button_pressed(PSP_CTRL_START)) { 
+            isPause = !isPause;
+            click->play(0);
+        }
 
+        // Death condition
         if(!isDead) {
             if(lives = 0) {
                 isDead = true;
                 //pDeath.play(0);
             }
+        } else if(isDead && Input::button_pressed(PSP_CTRL_SQUARE)) {
+            // Go back to level state on death
+            StateManagement::set_state(std::make_shared<LevelState>()); //Go back to level select
         }
 
-        if(isDead) {
-            gameOver.draw();
-            if(button_pressed(PSP_CTRL_SQUARE)) {
-                isLevelSelect = true;
-                isBasic = false;
-                isCurves = false;
-            }
+        // If Not Paused, Update Enemies
+        if(!isPause){
+            eman.update(character->transform.position, dt);
         }
-
     }
 
+    auto draw(double dt) -> void override {
+        // Draw map
+        if(m_LevelNumber == 0) {
+            basicMap->draw();
+        } else if(m_LevelNumber == 1) {
+            curveMap->draw();
+        }
+
+        // Draw Enemies
+        eman.draw(enemySprites);
+        
+        // Draw Pause Menu
+        if(isPause) 
+            pauseMenu->draw();
+        
+        // Draw Character (above pause if necessary)
+        character->draw();
+        
+        // Draw Game Over
+        if(isDead) 
+            gameOver->draw();
+    }
+};
+
+LevelState::LevelState() {
+    // level select screen sprite
+    levelSelect = std::make_shared<Sprite>(
+        QGVector2{240,140}, 
+        QGVector2{480, 288}, 
+        QGTexInfo{"screens/level select.png", 1, 0}
+    );
+    levelSelect->layer = 1;
+    sceKernelDcacheWritebackInvalidateAll();
+}
+
+/**
+ * @brief Update -- choose basic or curved state
+ * 
+ * @param dt Unused
+ */
+auto LevelState::update(double dt) -> void {
+    if(Input::button_pressed(PSP_CTRL_LTRIGGER)) {
+        click->play(0);
+        //Set State Basic
+        StateManagement::set_state(std::make_shared<GameState>(0));
+    }
+    if(Input::button_pressed(PSP_CTRL_RTRIGGER)) {
+        click->play(0);
+        //Set State Curves
+        StateManagement::set_state(std::make_shared<GameState>(1));
+    }
+}
+
+/**
+ * @brief Draw Level Selection Menu
+ * 
+ * @param dt Unused
+ */
+auto LevelState::draw(double dt) -> void {
+    levelSelect->draw();
+}
+
+/**
+ * @brief Entry point!
+ * 
+ */
+auto main() -> int {
+    // Initialize
+    QuickGame::init();    
+    
+    // set camera to 2d
+    Graphics::set2D();
+    
+    // FILE* highScore = fopen("data/highscores.txt", "a+")
+    // or you should use std::fstream here
+    // fclose(highScore)
+
+    QGTimer timer;
+    QuickGame_Timer_Start(&timer);
+
+    // Audio Loading
+    click = std::make_shared<Audio::Clip>("sounds/click.wav", false, false);
+    //pDeath = std::make_shared<Audio::Clip>("sounds/death.wav", false, false); //player death
+    //eDeath = std::make_shared<Audio::Clip>("sounds/edeath.wav", false, false); //enemy death
+    //bDeath = std::make_shared<Audio::Clip>("sounds/bdeath.wav", false, false); //boss death
+
+    // Set base state
+    StateManagement::set_state(std::make_shared<TitleState>());
+
+    // While running
+    while(running()){
+        auto dt = QuickGame_Timer_Delta(&timer);
+
+        // Make sure we have a state to use
+        if (StateManagement::stateStack.empty())
+            continue;
+
+        // Update Sequence
+        Input::update();
+        StateManagement::stateStack.back()->update(dt);
+
+        // Draw Sequence
+        Graphics::start_frame();
+        Graphics::clear();
+        Graphics::set2D();
+        StateManagement::stateStack.back()->draw(dt);
+        Graphics::end_frame(true);   
+    }
+
+    // Terminate
     QuickGame::terminate();
     return 0;
 }

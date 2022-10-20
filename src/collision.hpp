@@ -1,3 +1,4 @@
+#pragma once
 #include <QuickGame.hpp>
 #include <cmath>
 using namespace QuickGame::Graphics;
