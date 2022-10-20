@@ -16,6 +16,75 @@ std::shared_ptr<Audio::Clip> click; //click
 
 //std::vector<std::shared_ptr<State>> StateManagement::stateStack;
 
+class Enemy {
+    public:
+    Enemy(int type) : m_Type(type) {}
+    virtual ~Enemy() = default;
+
+    auto update(QGVector2 playerPosition, double dt) -> void {
+        auto diff = QGVector2{playerPosition.x - transform.position.x, playerPosition.y - transform.position.y};
+        auto len = sqrtf(diff.x * diff.x + diff.y * diff.y);
+
+        if(len > 1.0f){
+            diff.x /= len;
+            diff.y /= len;
+        }
+
+        if(len < 60){
+            transform.position.x += diff.x * 0.5f;
+            transform.position.y += diff.y * 0.5f;
+        }
+    }
+
+    QGTransform2D transform;
+    int m_Type;
+};
+
+class EnemyManager final {
+    std::map<int, std::shared_ptr<Enemy>> enemies;
+    int ecount;
+
+    public: 
+
+    EnemyManager() {
+        enemies.clear();
+    }
+
+    auto add_enemy(QGVector2 position, int type) -> void {
+        enemies.emplace(
+            ecount, 
+            std::make_shared<Enemy>(type)
+        );
+        enemies[ecount]->transform.position = position;
+        enemies[ecount]->transform.rotation = 0;
+        enemies[ecount]->transform.scale = {16, 26};
+
+        ecount++;
+    }
+    auto add_enemy_random(QGVector2 position) -> void {
+        add_enemy(position, rand() % 5);
+    }
+
+    auto update(QGVector2 pos, double dt) -> void {
+        std::vector<int> ids;
+
+        for(auto& [id, e] : enemies) {
+            e->update(pos, dt);
+        }
+
+        for(auto& id : ids) {
+            enemies.erase(id);
+        }
+    }
+
+    auto draw(std::array<std::shared_ptr<Sprite>, 5>& eArray) -> void {
+        for(auto& [id, e] : enemies) {
+            eArray[e->m_Type]->transform = e->transform;
+            eArray[e->m_Type]->draw();
+        }
+    }
+};
+
 class GameState final : public State {
     std::map<int, std::string> enemyRanks = {
         {0, "red"},
@@ -25,7 +94,7 @@ class GameState final : public State {
         {4, "black"}
     };
 
-    std::shared_ptr<Sprite> enemySprites[5];    
+    std::array<std::shared_ptr<Sprite>, 5> enemySprites;    
 
     std::shared_ptr<Sprite> basicMap;
     std::shared_ptr<Sprite> curveMap; // curves map
@@ -40,6 +109,7 @@ class GameState final : public State {
     int wave = 1;
     int lives = 3;
 
+    EnemyManager eman;
 public:
     GameState(int level_number): m_LevelNumber(level_number) {
         basicMap = std::make_shared<Sprite>(
@@ -92,6 +162,13 @@ public:
                     0, 0
                 }
             );
+        }
+
+        for(int i = 0; i < 5; i++) {
+            eman.add_enemy_random({
+                static_cast<float>(rand() % 480), 
+                static_cast<float>(rand() % 272)
+            });
         }
     }
     ~GameState() = default;
@@ -157,6 +234,10 @@ public:
         } else if(isDead && Input::button_pressed(PSP_CTRL_SQUARE)) {
             StateManagement::set_state(std::make_shared<LevelState>()); //Go back to level select
         }
+
+        if(!isPause){
+            eman.update(character->transform.position, dt);
+        }
     }
 
     auto draw(double dt) -> void override {
@@ -166,16 +247,13 @@ public:
             curveMap->draw();
         }
         
+        if(isPause) 
+            pauseMenu->draw();
+        
         //We're actually playing the game
         character->draw();
-        //redEnemy->draw();
+        eman.draw(enemySprites);
         
-        if(isPause) {
-            pauseMenu->draw();
-            //FIXME: Is this draw call necessary?
-            character->draw();
-        }
-    
         if(isDead) 
             gameOver->draw();
     }
