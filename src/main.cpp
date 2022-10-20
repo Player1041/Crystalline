@@ -92,8 +92,18 @@ int main(int argc, char** argv){
     // black enemy (level 5) sprite
     Sprite blackEnemy({0,0}, {16,26}, {"sprites/enemies/black/enemy.png", 0, 0});
 
-    // simple confirm click
-    Clip click("audio/click.wav", false, false);
+    // audio loading
+
+    Clip click("sounds/click.wav", false, false); //click
+
+    Clip startup("sounds/startup.wav", false, false); //startup noise
+
+    //Clip pDeath("sounds/death.wav", false, false); //player death
+
+    //Clip eDeath("sounds/edeath.wav", false, false); //enemy death
+
+    //Clip bDeath("sounds/bdeath.wav", false, false); //boss death
+
 
     // set camera; may be unneeded but we leave it in
     QGCamera2D camera = QGCamera2D();
@@ -110,6 +120,7 @@ int main(int argc, char** argv){
         if(!stopEnemy){
             update();
         }
+
         if(button_held(PSP_CTRL_UP)) {
             if(character.transform.position.y > 10) {
                 character.transform.position.y += 1.5f;
@@ -138,10 +149,6 @@ int main(int argc, char** argv){
             }
         }
 
-        if(button_pressed(PSP_CTRL_CROSS)) {
-            click.play(0);
-        }
-
         
         start_frame();
         clear();
@@ -152,6 +159,7 @@ int main(int argc, char** argv){
             if(button_pressed(PSP_CTRL_CROSS)){
                 isTitle = false;
                 isLevelSelect = true;
+                startup.play(0);
             }
         }
 
@@ -160,10 +168,12 @@ int main(int argc, char** argv){
             if(button_pressed(PSP_CTRL_LTRIGGER)) {
                 isLevelSelect = false;
                 isBasic = true;
+                click.play(0);
             }
             if(button_pressed(PSP_CTRL_RTRIGGER)) {
                 isLevelSelect = false;
                 isCurves = true;
+                click.play(0);
             }
         }
 
@@ -174,16 +184,18 @@ int main(int argc, char** argv){
             if(button_pressed(PSP_CTRL_START)) { 
                 isPause = true;
                 stopEnemy = false;
+                click.play(0);
             }
-            
         }  
 
         if(isCurves) {
             curveMap.draw();
             character.draw();
+            redEnemy.draw();
             if(button_pressed(PSP_CTRL_START)) { 
                 isPause = true;
                 stopEnemy = false;
+                click.play(0);
             }
         }
         
@@ -192,6 +204,7 @@ int main(int argc, char** argv){
             character.draw();
             if(button_pressed(PSP_CTRL_CIRCLE)) {
                 isPause = false;
+                click.play(0)
             }
         }
 
@@ -215,11 +228,23 @@ int main(int argc, char** argv){
 
         if(character.intersects(redEnemy)) {
             lives = lives -1;
-            if(lives = 0) {
-                gameOver.draw();
-            }
         } 
 
+        if(!isDead) {
+            if(lives = 0) {
+                isDead = true;
+                pDeath.play(0);
+            }
+        }
+
+        if(isDead) {
+            gameOver.draw();
+            if(button_pressed(PSP_CTRL_SQUARE)) {
+                isLevelSelect = true;
+                isBasic = false;
+                isCurves = false;
+            }
+        }
 
     }
 
