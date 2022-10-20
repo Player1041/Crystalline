@@ -5,7 +5,7 @@
 #include <memory>
 #include <map>
 #include "collision.hpp"
-#include "state.hpp"
+#include "titlestate.hpp"
 #include <pspkernel.h>
 
 // any namespaces
@@ -13,28 +13,8 @@ using namespace QuickGame;
 using namespace QuickGame::Graphics;
 
 std::shared_ptr<Audio::Clip> click; //click
-std::shared_ptr<Audio::Clip> startup;//startup noise
 
-namespace StateManagement {
-    std::vector<std::shared_ptr<State>> stateStack;
-    auto set_state(std::shared_ptr<State> state) {
-        stateStack.clear();
-        stateStack.push_back(state);
-        stateStack.shrink_to_fit();
-    }
-} // StateManagement
-
-
-class LevelState final : public State {
-    std::shared_ptr<Sprite> levelSelect; // level select screen sprite
-
-public:
-    LevelState();
-    ~LevelState() = default;
-
-    auto update(double dt) -> void override;
-    auto draw(double dt) -> void override;
-};
+//std::vector<std::shared_ptr<State>> StateManagement::stateStack;
 
 class GameState final : public State {
     std::map<int, std::string> enemyRanks = {
@@ -229,35 +209,6 @@ auto LevelState::draw(double dt) -> void {
     levelSelect->draw();
 }
 
-class TitleState final : public State {
-    std::shared_ptr<Sprite> title; // title screen sprite
-
-public:
-    TitleState() {
-        // title screen sprite
-        title = std::make_shared<Sprite>(
-            QGVector2{240,140}, 
-            QGVector2{480, 288}, 
-            QGTexInfo{"screens/title.png", 1, 0}
-        );
-        title->layer = 1;
-
-        sceKernelDcacheWritebackInvalidateAll();
-    }
-    ~TitleState() = default;
-
-    auto update(double dt) -> void override {
-        if(Input::button_pressed(PSP_CTRL_CROSS)){
-            startup->play(0);
-            StateManagement::set_state(std::make_shared<LevelState>());
-        }
-    }
-
-    auto draw(double dt) -> void override {
-        title->draw();
-    }
-};
-
 auto main() -> int {
     // Initialize
     QuickGame::init();    
@@ -275,7 +226,6 @@ auto main() -> int {
 
     // Audio Loading
     click = std::make_shared<Audio::Clip>("sounds/click.wav", false, false);
-    startup = std::make_shared<Audio::Clip>("sounds/startup.wav", false, false);
     //pDeath = std::make_shared<Audio::Clip>("sounds/death.wav", false, false); //player death
     //eDeath = std::make_shared<Audio::Clip>("sounds/edeath.wav", false, false); //enemy death
     //bDeath = std::make_shared<Audio::Clip>("sounds/bdeath.wav", false, false); //boss death
