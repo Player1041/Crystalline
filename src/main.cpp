@@ -13,6 +13,7 @@ using namespace QuickGame;
 using namespace QuickGame::Graphics;
 
 std::shared_ptr<Audio::Clip> click; //click
+std::shared_ptr<Audio::Clip> pause; // pause
 
 /**
  * @brief Defines a basic enemy to draw on screen
@@ -50,9 +51,9 @@ class Enemy {
         }
 
         // If we're within a certain range, chase it
-        if(len < 60){
-            transform.position.x += diff.x * 0.5f;
-            transform.position.y += diff.y * 0.5f;
+        if(len < 200){
+            transform.position.x += diff.x * 0.8f;
+            transform.position.y += diff.y * 0.8f;
         }
     }
 
@@ -69,10 +70,11 @@ class Enemy {
  * draw() method Draws all enemies
  */
 class EnemyManager final {
+    public:
     std::map<int, std::shared_ptr<Enemy>> enemies;
     int ecount;
 
-    public: 
+
 
     EnemyManager() {
         enemies.clear();
@@ -177,6 +179,7 @@ public:
      * 
      * @param level_number Level to load (0 = basic, 1 = curves)
      */
+    
     GameState(int level_number): m_LevelNumber(level_number) {
         basicMap = std::make_shared<Sprite>(
             QGVector2{240,140}, 
@@ -224,8 +227,8 @@ public:
                 QGVector2{100, 120},
                 QGVector2{16, 26},
                 QGTexInfo{
-                    ("sprites/enemies/" + enemyRanks[i] + "/front.png").c_str(), 
-                    0, 0
+                    ("sprites/enemies/" + enemyRanks[i] + "/enemy.png").c_str(), 
+                    1, 0
                 }
             );
         }
@@ -244,6 +247,9 @@ public:
      * 
      * @param dt Delta Time
      */
+
+    float damageTimeout = 0.0f;
+
     auto update(double dt) -> void override {
         // Move character
         if(Input::button_held(PSP_CTRL_UP)) 
@@ -290,23 +296,21 @@ public:
 
         //life system
         //commented out as pseudocode
-        //if(character->intersects(redEnemy)) {
-        //    lives = lives -1;
-        //} 
 
+        if(character->intersects(enemySprites)) {
+            isDead = true;
+        }
         // Check to pause
         if(Input::button_pressed(PSP_CTRL_START)) { 
             isPause = !isPause;
-            click->play(0);
+            pause->play(0);
         }
 
-        // Death condition
-        if(!isDead) {
-            if(lives = 0) {
-                isDead = true;
-                //pDeath.play(0);
-            }
-        } else if(isDead && Input::button_pressed(PSP_CTRL_SQUARE)) {
+        if(isDead) {
+            gameOver->draw();
+        }
+
+        if(isDead && Input::button_pressed(PSP_CTRL_SQUARE)) {
             // Go back to level state on death
             StateManagement::set_state(std::make_shared<LevelState>()); //Go back to level select
         }
@@ -399,6 +403,7 @@ auto main() -> int {
 
     // Audio Loading
     click = std::make_shared<Audio::Clip>("sounds/click.wav", false, false);
+    pause = std::make_shared<Audio::Clip>("sounds/pause.wav",false, false);
     //pDeath = std::make_shared<Audio::Clip>("sounds/death.wav", false, false); //player death
     //eDeath = std::make_shared<Audio::Clip>("sounds/edeath.wav", false, false); //enemy death
     //bDeath = std::make_shared<Audio::Clip>("sounds/bdeath.wav", false, false); //boss death

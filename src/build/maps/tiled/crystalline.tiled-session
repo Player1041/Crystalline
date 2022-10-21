@@ -3,7 +3,7 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "clouds.tsx",
+    "activeFile": "",
     "expandedProjectPaths": [
         "."
     ],
@@ -17,8 +17,8 @@
             "scale": 1.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 161.33333333333331,
-                "y": 215
+                "x": 240,
+                "y": 144.33333333333334
             }
         },
         "grassy terrain.tsx": {
@@ -30,8 +30,8 @@
             "scale": 1,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 233,
-                "y": 190.5
+                "x": 240,
+                "y": 144.5
             }
         },
         "skt.tsx": {
@@ -53,9 +53,9 @@
         }
     },
     "last.imagePath": "D:/Sean/Coding/New Projects - 9.22/Games/Game Jams/REstart 2022 - PSP/Crystalline/src/build/maps/tilesets",
-    "map.height": 9,
+    "map.height": 16,
     "map.lastUsedFormat": "tmx",
-    "map.width": 15,
+    "map.width": 20,
     "openFiles": [
         "test.tmx",
         "clouds.tsx",
@@ -66,10 +66,10 @@
     "project": "crystalline.tiled-project",
     "recentFiles": [
         "test.tmx",
-        "sky.tsx",
-        "pause.tmx",
-        "curves.tmx",
         "clouds.tsx",
+        "curves.tmx",
+        "pause.tmx",
+        "sky.tsx",
         "grassy terrain.tsx",
         "skt.tsx"
     ],
